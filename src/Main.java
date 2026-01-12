@@ -8,7 +8,7 @@ public class Main {
         System.out.println("Connecting to Supabase...");
         try (Connection connection = DatabaseConnection.getConnection()) {
             System.out.println("Connected successfully!");
-            String sql = "SELECT CURRENT_TIM";
+            String sql = "SELECT CURRENT_TIME";
             try (PreparedStatement stmt = connection.prepareStatement(sql);
                  ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
