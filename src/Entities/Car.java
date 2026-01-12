@@ -1,4 +1,5 @@
 package Entities;
 
-public class Cars {
+public class Car {
+
 }
