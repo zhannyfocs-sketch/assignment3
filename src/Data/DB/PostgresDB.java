@@ -1,75 +1,15 @@
 package Data.DB;
 
-import Data.interfaces.IDB;
-
 import java.sql.*;
 
-public class PostgresDB implements IDB {
-    private String host;
-    private String username;
-    private String password;
-    private String dbName;
+public class PostgresDB {
+    private static final String URL = "jdbc:postgresql://aws-1-ap-south-1.pooler.supabase.com:5432/postgres?sslmode=require";
+    private static final String USER = "postgres.aeeyxigpjglbzteqolmh";
+    private static final String PASSWORD = "AirisFIRSTdata99";
+    private PostgresDB(){
 
-    private Connection connection;
-
-    public PostgresDB() {
-        setHost("jdbc:postgresql://aws-1-ap-south-1.pooler.supabase.com:5432");
-        setUsername("postgres.aeeyxigpjglbzteqolmh");
-        setPassword("AirisFIRSTdata99");
-        setDbName("postgres");
     }
-
-    public String getHost() {
-        return host;
-    }
-    public void setHost(String host) {
-        this.host = host;
-    }
-    public String getUsername() {
-        return username;
-    }
-    public void setUsername(String username) {
-        this.username = username;
-    }
-    public String getPassword() {
-        return password;
-    }
-    public void setPassword(String password) {
-        this.password = password;
-    }
-    public String getDbName() {
-        return dbName;
-    }
-    public void setDbName(String dbName) {
-        this.dbName = dbName;
-    }
-
-
-    @Override
-    public Connection getConnection() {
-        String connectionUrl = host + "/" + dbName;
-        try {
-            if (connection != null && !connection.isClosed()) {
-                return connection;
-            }
-
-            Class.forName("org.postgresql.Driver");
-            connection = DriverManager.getConnection(connectionUrl + "?sslmode=require", username, password);
-            return connection;
-        } catch (Exception e) {
-            System.out.println("Failed to connect to postgres: " + e.getMessage());
-            return null;
-        }
-    }
-
-    @Override
-    public void close() {
-        if (connection != null) {
-            try {
-                connection.close();
-            } catch (SQLException ex) {
-                System.out.println("Connection close error: " + ex.getMessage());
-            }
-        }
+    public static Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(URL, USER, PASSWORD);
     }
 }
