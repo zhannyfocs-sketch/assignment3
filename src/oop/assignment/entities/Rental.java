@@ -7,29 +7,36 @@ public class Rental {
     private int id;
     private int carId;
     private int customerId;
-    private LocalDate startdate;
-    private LocalDate enddate;
-    private BigDecimal totalcost;
+    private LocalDate startDate;
+    private LocalDate endDate;
+    private BigDecimal totalCost;
     private String status;
 
-    public Rental(){}
+    public Rental() {}
 
-    public Rental(int carId, int customerId, LocalDate startdate, LocalDate enddate, BigDecimal totalcost, String status) {
-        setCarId(carId);
-        setCustomerId(customerId);
-        setStartdate(startdate);
-        setEnddate(enddate);
-        setTotalcost(totalcost);
-        setStatus(status);
+    public Rental(int carId, int customerId, LocalDate startDate, LocalDate endDate) {
+        this.carId = carId;
+        this.customerId = customerId;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.status = "active";
     }
-    public Rental(int id, int carId, int customerId, BigDecimal totalcost, String status) {
-        this(carId, customerId, LocalDate.now(), LocalDate.now(), totalcost, status);
-        setId(id);
+
+    public Rental(int id, int carId, int customerId, LocalDate startDate,
+                  LocalDate endDate, BigDecimal totalCost, String status) {
+        this.id = id;
+        this.carId = carId;
+        this.customerId = customerId;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.totalCost = totalCost;
+        this.status = status;
     }
 
     public int getId() {
         return id;
     }
+
     public void setId(int id) {
         this.id = id;
     }
@@ -37,6 +44,7 @@ public class Rental {
     public int getCarId() {
         return carId;
     }
+
     public void setCarId(int carId) {
         this.carId = carId;
     }
@@ -44,50 +52,65 @@ public class Rental {
     public int getCustomerId() {
         return customerId;
     }
+
     public void setCustomerId(int customerId) {
         this.customerId = customerId;
     }
 
-    public LocalDate getStartdate() {
-        return startdate;
-    }
-    public void setStartdate(LocalDate startdate) {
-        this.startdate = startdate;
+    public LocalDate getStartDate() {
+        return startDate;
     }
 
-    public LocalDate getEnddate() {
-        return enddate;
-    }
-    public void setEnddate(LocalDate enddate) {
-        this.enddate = enddate;
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
     }
 
-    public BigDecimal getTotalcost() {
-        return totalcost;
+    public LocalDate getEndDate() {
+        return endDate;
     }
-    public void setTotalcost(BigDecimal totalcost) {
-        this.totalcost = totalcost;
+
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
+    }
+
+    public BigDecimal getTotalCost() {
+        return totalCost;
+    }
+
+    public void setTotalCost(BigDecimal totalCost) {
+        this.totalCost = totalCost;
     }
 
     public String getStatus() {
         return status;
     }
+
     public void setStatus(String status) {
         this.status = status;
     }
 
     public long getRentalDays() {
-        if (startdate == null || enddate == null)
+        if (startDate == null || endDate == null)
             return 0;
-        return enddate.toEpochDay() - startdate.toEpochDay();
+        return java.time.temporal.ChronoUnit.DAYS.between(startDate, endDate);
+    }
+
+    public boolean isValidDates() {
+        if (startDate == null || endDate == null)
+            return false;
+        return !endDate.isBefore(startDate);
     }
 
     @Override
     public String toString() {
         long days = getRentalDays();
-        return "Rental" + id + "Car ID" + carId + "Customer's ID" + customerId
-                + "Start date: " + startdate + "End date: " + enddate + "Total dats" + days
-                + "Total cost: " + totalcost;
+        return "Rental [id=" + id +
+                ", carId=" + carId +
+                ", customerId=" + customerId +
+                ", startDate=" + startDate +
+                ", endDate=" + endDate +
+                ", totalCost=" + totalCost +
+                ", status=" + status +
+                ", rentalDays=" + days + "]";
     }
-
 }
