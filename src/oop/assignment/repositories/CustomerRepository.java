@@ -2,8 +2,10 @@ package oop.assignment.repositories;
 
 import oop.assignment.db.IDB;
 import oop.assignment.entities.Customer;
+import oop.assignment.exceptions.InvalidDriverAgeException;
 import oop.assignment.repositories.interfaces.ICustomerRepository;
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +17,11 @@ public class CustomerRepository implements ICustomerRepository {
     }
 
     @Override
-    public void add(Customer customer) throws SQLException {
+    public void add(Customer customer) throws SQLException, InvalidDriverAgeException  {
+        int age = LocalDate.now().getYear() - customer.getBirthdate().getYear();
+        if (age < 18) {
+            throw new InvalidDriverAgeException(age);
+        }
         String sql = "INSERT INTO customers (fullName, email, driverLicenseId, birthdate) VALUES (?, ?, ?, ?)";
         try (Connection conn = db.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {

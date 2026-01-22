@@ -6,7 +6,6 @@ import oop.assignment.repositories.*;
 import oop.assignment.repositories.interfaces.*;
 import oop.assignment.services.*;
 
-import java.math.BigDecimal;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.*;
@@ -36,16 +35,14 @@ public class Main {
 
             Scanner scanner = new Scanner(System.in);
             while (true) {
-                System.out.println("\n--- CAR RENTAL MANAGEMENT SYSTEM ---");
-                System.out.println("1. Search available cars");
-                System.out.println("2. Create a rental");
-                System.out.println("3. Complete rental with payment");
-                System.out.println("4. Add new car");
-                System.out.println("5. Register new customer");
-                System.out.println("6. View all cars");
-                System.out.println("7. View all customers");
-                System.out.println("8. View all rentals");
-                System.out.println("9. View all payments");
+                System.out.println("\n--- Car Rental System ---");
+                System.out.println("1. Register Customer");
+                System.out.println("2. Create Rental");
+                System.out.println("3. Complete Rental with Payment");
+                System.out.println("4. Search Available Cars");
+                System.out.println("5. Cancel Rental");
+                System.out.println("6. View All Customers");
+                System.out.println("7. View All Rentals");
                 System.out.println("0. Exit");
                 System.out.print("Select an option: ");
 
@@ -55,136 +52,79 @@ public class Main {
                 try {
                     switch (choice) {
                         case 1:
-                            System.out.print("\n--- AVAILABLE CARS ---\n");
-                            List<Car> availableCars = carInventoryService.getOnlyAvailableCars();
-                            if (availableCars.isEmpty()) {
-                                System.out.println("No cars available at the moment.");
+                            System.out.print("Full Name: "); String name = scanner.nextLine();
+                            System.out.print("Email: "); String email = scanner.nextLine();
+                            System.out.print("Driver License: "); String license = scanner.nextLine();
+                            System.out.print("Birthdate (YYYY-MM-DD): "); LocalDate birthdate = LocalDate.parse(scanner.nextLine());
+                            int age = java.time.Period.between(birthdate, java.time.LocalDate.now()).getYears();
+                            if (age < 18) {
+                                System.out.println("Error: Customer must be 18 or older. Age: " + age);
                             } else {
-                                availableCars.forEach(car -> System.out.println(
-                                        "ID: " + car.getId() + " | " + car.getMake() + " " + car.getModel() +
-                                                " | Rate: " + car.getRate() + " KZT/day"
-                                ));
+                                Customer c = new Customer(name, email, license, birthdate);
+                                customerRepo.add(c);
+                                System.out.println("Success! Customer registered. Assigned ID: " + c.getId());
                             }
                             break;
                         case 2:
-                            System.out.print("Car ID: ");
-                            int carId = scanner.nextInt();
-                            System.out.print("Customer ID: ");
-                            int customerId = scanner.nextInt();
+                            System.out.print("Car ID: "); int carId = scanner.nextInt();
+                            System.out.print("Customer ID: "); int customerId = scanner.nextInt();
                             scanner.nextLine();
-                            System.out.print("Start date (YYYY-MM-DD): ");
-                            LocalDate startDate = LocalDate.parse(scanner.nextLine());
-                            System.out.print("End date (YYYY-MM-DD): ");
-                            LocalDate endDate = LocalDate.parse(scanner.nextLine());
-
-                            Rental rental = new Rental(carId, customerId, startDate, endDate);
-                            rentalService.createRental(rental);
-                            System.out.println("Success! Rental created. Rental ID: " + rental.getId());
+                            System.out.print("Start Date (YYYY-MM-DD): "); LocalDate start = LocalDate.parse(scanner.nextLine());
+                            System.out.print("End Date (YYYY-MM-DD): "); LocalDate end = LocalDate.parse(scanner.nextLine());
+                            Rental r = new Rental(carId, customerId, start, end);
+                            if (!r.isValidDates()) {
+                                System.out.println("Error: End date must be after start date.");
+                            } else {
+                                rentalService.createRental(r);
+                                System.out.println("Success! Rental created. Rental ID: " + r.getId());
+                            }
                             break;
                         case 3:
-                            System.out.print("Rental ID: ");
-                            int rentalId = scanner.nextInt();
+                            System.out.print("Rental ID: "); int rentalId = scanner.nextInt();
                             scanner.nextLine();
-                            System.out.print("Was there an accident? (yes/no): ");
-                            boolean hadAccident = scanner.nextLine().equalsIgnoreCase("yes");
-                            System.out.print("Payment method (cash/card): ");
-                            String paymentMethod = scanner.nextLine();
-
-                            Payment payment = rentalService.completeRental(rentalId, hadAccident, paymentMethod);
-                            System.out.println("Success! Rental completed.");
-                            System.out.println("Total cost: " + payment.getAmount() + " KZT");
-                            System.out.println("Payment ID: " + payment.getId());
+                            System.out.print("Accident? (yes/no): "); boolean accident = scanner.nextLine().equalsIgnoreCase("yes");
+                            System.out.print("Payment Method: "); String method = scanner.nextLine();
+                            Payment p = rentalService.completeRental(rentalId, accident, method);
+                            System.out.println("Success! Rental completed. Payment: " + p.getAmount() + " KZT");
                             break;
                         case 4:
-                            System.out.print("Car make: ");
-                            String make = scanner.nextLine();
-                            System.out.print("Car model: ");
-                            String model = scanner.nextLine();
-                            System.out.print("Daily rate (KZT): ");
-                            BigDecimal rate = new BigDecimal(scanner.nextLine());
-                            System.out.print("Available? (yes/no): ");
-                            boolean available = scanner.nextLine().equalsIgnoreCase("yes");
-
-                            Car newCar = new Car(make, model, rate, available);
-                            carRepo.add(newCar);
-                            System.out.println("Success! Car added. Car ID: " + newCar.getId());
+                            List<Car> cars = carInventoryService.getOnlyAvailableCars();
+                            if (cars.isEmpty()) {
+                                System.out.println("No cars available at the moment.");
+                            } else {
+                                System.out.println("--- Available Cars ---");
+                                cars.forEach(car -> System.out.println("ID " + car.getId() + ": " + car.getMake() + " " + car.getModel() + " - " + car.getRate() + " KZT/day"));
+                            }
                             break;
                         case 5:
-                            System.out.print("Full name: ");
-                            String fullName = scanner.nextLine();
-                            System.out.print("Email: ");
-                            String email = scanner.nextLine();
-                            System.out.print("Driver license ID: ");
-                            String license = scanner.nextLine();
-                            System.out.print("Birthdate (YYYY-MM-DD): ");
-                            LocalDate birthdate = LocalDate.parse(scanner.nextLine());
-
-                            Customer newCustomer = new Customer(fullName, email, license, birthdate);
-                            customerRepo.add(newCustomer);
-                            System.out.println("Success! Customer registered. Customer ID: " + newCustomer.getId());
+                            System.out.print("Rental ID to cancel: ");
+                            rentalService.cancelRental(scanner.nextInt());
+                            System.out.println("Cancelled.");
                             break;
                         case 6:
-                            System.out.print("\n--- ALL CARS ---\n");
-                            List<Car> allCars = carRepo.findAll();
-                            if (allCars.isEmpty()) {
-                                System.out.println("No cars in system.");
+                            List<Customer> customers = customerRepo.findAll();
+                            if (customers.isEmpty()) {
+                                System.out.println("No customers registered yet.");
                             } else {
-                                allCars.forEach(car -> System.out.println(
-                                        "ID: " + car.getId() + " | " + car.getMake() + " " + car.getModel() +
-                                                " | Rate: " + car.getRate() + " KZT/day | Available: " + (car.isAvailable() ? "Yes" : "No")
-                                ));
+                                System.out.println("--- Registered Customers ---");
+                                customers.forEach(customer -> System.out.println("ID " + customer.getId() + ": " + customer.getFullName() + " - Age: " + customer.getAge()));
                             }
                             break;
                         case 7:
-                            System.out.print("\n--- ALL CUSTOMERS ---\n");
-                            List<Customer> allCustomers = customerRepo.findAll();
-                            if (allCustomers.isEmpty()) {
-                                System.out.println("No customers in system.");
+                            List<Rental> rentals = rentalService.getAllRentals();
+                            if (rentals.isEmpty()) {
+                                System.out.println("No rentals yet.");
                             } else {
-                                allCustomers.forEach(customer -> System.out.println(
-                                        "ID: " + customer.getId() + " | Name: " + customer.getFullName() +
-                                                " | Age: " + customer.getAge() + " | Email: " + customer.getEmail()
-                                ));
-                            }
-                            break;
-                        case 8:
-                            System.out.print("\n--- ALL RENTALS ---\n");
-                            List<Rental> allRentals = rentalRepo.findAll();
-                            if (allRentals.isEmpty()) {
-                                System.out.println("No rentals in system.");
-                            } else {
-                                allRentals.forEach(rentalItem -> System.out.println(
-                                        "ID: " + rentalItem.getId() + " | Car: " + rentalItem.getCarId() +
-                                                " | Customer: " + rentalItem.getCustomerId() + " | " +
-                                                rentalItem.getStartDate() + " to " + rentalItem.getEndDate() +
-                                                " | Status: " + rentalItem.getStatus()
-                                ));
-                            }
-                            break;
-                        case 9:
-                            System.out.print("\n--- ALL PAYMENTS ---\n");
-                            List<Payment> allPayments = paymentRepo.getAllPayments();
-                            if (allPayments.isEmpty()) {
-                                System.out.println("No payments in system.");
-                            } else {
-                                allPayments.forEach(paymentItem -> System.out.println(
-                                        "ID: " + paymentItem.getId() + " | Rental: " + paymentItem.getRentalId() +
-                                                " | Amount: " + paymentItem.getAmount() + " KZT" +
-                                                " | Method: " + paymentItem.getPaymentMethod()
-                                ));
+                                System.out.println("--- All Rentals ---");
+                                rentals.forEach(rental -> System.out.println("ID " + rental.getId() + ": Car " + rental.getCarId() + " - Customer " + rental.getCustomerId() + " - " + rental.getStatus()));
                             }
                             break;
                     }
-                } catch (InvalidDriverAgeException e) {
-                    System.out.println("Error: " + e.getMessage());
-                } catch (CarNotAvailableException e) {
-                    System.out.println("Error: " + e.getMessage());
-                } catch (RentalOverlapException e) {
-                    System.out.println("Error: " + e.getMessage());
-                } catch (InvalidPaymentAmount e) {
-                    System.out.println("Error: " + e.getMessage());
-                } catch (Exception e) {
-                    System.out.println("Error: " + e.getMessage());
+                }
+                catch (Exception e) {
+                    System.out.println("--- DEBUG ERROR INFO ---");
+                    e.printStackTrace();
+                    System.out.println("------------------------");
                 }
             }
         } catch (SQLException e) {
