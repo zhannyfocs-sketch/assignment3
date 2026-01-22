@@ -28,7 +28,7 @@ public class PostgresDB implements IDB {
         }
     }
 
-    private PostgresDB() {
+    public PostgresDB() {
     }
 
     public static PostgresDB create() {
