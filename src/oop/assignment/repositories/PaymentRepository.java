@@ -10,6 +10,7 @@ import java.util.List;
 
 public class PaymentRepository implements IPaymentRepository {
     private final IDB db;
+
     public PaymentRepository(IDB db) {
         this.db = db;
     }
@@ -34,7 +35,6 @@ public class PaymentRepository implements IPaymentRepository {
             }
         }
     }
-
     @Override
     public Payment findById(int paymentId) throws SQLException {
         String sql = "SELECT * FROM payments WHERE id = ?";
@@ -56,9 +56,8 @@ public class PaymentRepository implements IPaymentRepository {
         }
         return null;
     }
-
     @Override
-    public List<Payment> getAllPayments() throws SQLException {
+    public List<Payment> findAll() throws SQLException {
         List<Payment> payments = new ArrayList<>();
         String sql = "SELECT * FROM payments";
         try (Connection conn = db.getConnection();
@@ -73,6 +72,29 @@ public class PaymentRepository implements IPaymentRepository {
                         rs.getTimestamp("payment_date").toLocalDateTime(),
                         rs.getString("payment_method")
                 ));
+            }
+        }
+        return payments;
+    }
+    @Override
+    public List<Payment> findByRentalId(int rentalId) throws SQLException {
+        List<Payment> payments = new ArrayList<>();
+        String sql = "SELECT * FROM payments WHERE rental_id = ?";
+
+        try (Connection conn = db.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, rentalId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    payments.add(new Payment(
+                            rs.getInt("id"),
+                            rs.getInt("rental_id"),
+                            rs.getBigDecimal("amount"),
+                            rs.getTimestamp("payment_date").toLocalDateTime(),
+                            rs.getString("payment_method")
+                    ));
+                }
             }
         }
         return payments;

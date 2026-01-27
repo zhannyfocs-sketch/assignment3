@@ -2,7 +2,7 @@ package oop.assignment.entities;
 
 import java.math.BigDecimal;
 
-public class Car {
+public abstract class Car {
     private int id;
     private String make;
     private String model;
@@ -11,7 +11,7 @@ public class Car {
 
     public Car() {}
 
-    public Car(String make, String model, BigDecimal rate, boolean available) {
+    protected Car(String make, String model, BigDecimal rate, boolean available) {
         setMake(make);
         setModel(model);
         setRate(rate);
@@ -48,6 +48,9 @@ public class Car {
     }
     public void setRate(BigDecimal rate) {
         this.rate = rate;
+    }
+    public String getType() {
+        return this.getClass().getSimpleName().replace("Car", "");
     }
 
     public boolean isAvailable() {

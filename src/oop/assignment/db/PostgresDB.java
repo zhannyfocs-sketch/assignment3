@@ -2,37 +2,33 @@ package oop.assignment.db;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
+import java.util.Properties;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Properties;
 
 public class PostgresDB implements IDB {
-    private static final String URL =
-            "jdbc:postgresql://aws-1-ap-south-1.pooler.supabase.com:5432/postgres?sslmode=require";
-    private static final String USER = "postgres.aeeyxigpjglbzteqolmh";
-    private static final String PASSWORD = loadPassword();
+    private static final Properties properties = new Properties();
+    private static PostgresDB instance;
 
-    private static String loadPassword() {
-        Properties props = new Properties();
-        try (InputStream input = new FileInputStream("config.properties")) {
-            props.load(input);
-            String value = props.getProperty("DB_PASSWORD");
-            if (value == null || value.isBlank()) {
-                throw new RuntimeException("DB_PASSWORD is not set in config.properties");
-            }
-            return value;
+    static {
+        try (FileInputStream fis = new FileInputStream("config.properties")) {
+            properties.load(fis);
         } catch (IOException e) {
-            throw new RuntimeException("Cannot load DB_PASSWORD from config.properties", e);
+            System.err.println("Error: config.properties file not found!");
         }
     }
+    private static final String URL = properties.getProperty("db.url");
+    private static final String USER = properties.getProperty("db.user");
+    private static final String PASSWORD = properties.getProperty("db.password");
 
-    public PostgresDB() {
-    }
+    private PostgresDB() { }
 
-    public static PostgresDB create() {
-        return new PostgresDB();
+    public static synchronized PostgresDB getInstance() {
+        if (instance == null) {
+            instance = new PostgresDB();
+        }
+        return instance;
     }
 
     @Override

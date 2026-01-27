@@ -68,10 +68,6 @@ public class Payment {
         this.paymentMethod = paymentMethod;
     }
 
-    public boolean isValidAmount() {
-        return amount != null && amount.compareTo(BigDecimal.ZERO) > 0;
-    }
-
     @Override
     public String toString() {
         return "Payment [id=" + id +
