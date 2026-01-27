@@ -1,4 +1,4 @@
-package oop.assignment.config;
+package oop.assignment.singletones;
 
 import java.math.BigDecimal;
 

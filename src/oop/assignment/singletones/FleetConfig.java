@@ -1,4 +1,4 @@
-package oop.assignment.config;
+package oop.assignment.singletones;
 
 public class FleetConfig {
     private static FleetConfig instance;
@@ -16,5 +16,4 @@ public class FleetConfig {
     }
 
     public int getMinDriverAge() { return minDriverAge; }
-    public double getTaxRate() { return taxRate; }
 }

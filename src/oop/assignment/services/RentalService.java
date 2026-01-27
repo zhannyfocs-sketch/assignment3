@@ -3,7 +3,7 @@ package oop.assignment.services;
 import oop.assignment.entities.*;
 import oop.assignment.exceptions.*;
 import oop.assignment.repositories.interfaces.*;
-import oop.assignment.config.FleetConfig;
+import oop.assignment.singletones.FleetConfig;
 import java.sql.SQLException;
 import java.util.List;
 

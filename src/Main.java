@@ -1,4 +1,4 @@
-import oop.assignment.config.FleetConfig;
+import oop.assignment.singletones.FleetConfig;
 import oop.assignment.db.IDB;
 import oop.assignment.db.PostgresDB;
 import oop.assignment.entities.*;
@@ -7,7 +7,6 @@ import oop.assignment.repositories.*;
 import oop.assignment.repositories.interfaces.*;
 import oop.assignment.services.*;
 
-import java.math.BigDecimal;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.*;

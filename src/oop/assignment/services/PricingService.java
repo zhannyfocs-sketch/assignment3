@@ -1,6 +1,6 @@
 package oop.assignment.services;
 
-import oop.assignment.config.InsurancePolicy;
+import oop.assignment.singletones.InsurancePolicy;
 import oop.assignment.entities.Car;
 import oop.assignment.entities.Rental;
 import oop.assignment.exceptions.InvalidPaymentAmount;
