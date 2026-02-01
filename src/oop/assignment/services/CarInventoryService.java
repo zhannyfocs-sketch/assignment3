@@ -5,7 +5,6 @@ import oop.assignment.repositories.interfaces.ICarRepository;
 
 import java.sql.SQLException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class CarInventoryService {
     private final ICarRepository carRepo;
@@ -14,8 +13,6 @@ public class CarInventoryService {
         this.carRepo = carRepo;
     }
     public List<Car> getOnlyAvailableCars() throws SQLException {
-        return carRepo.findAll().stream()
-                .filter(Car::isAvailable)
-                .collect(Collectors.toList());
+        return carRepo.findAvailable();
     }
 }

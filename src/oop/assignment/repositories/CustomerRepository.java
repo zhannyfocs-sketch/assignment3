@@ -25,10 +25,10 @@ public class CustomerRepository implements ICustomerRepository {
 
             while (rs.next()) {
                 Customer customer = new Customer.Builder()
-                        .setId(rs.getInt("Id"))
-                        .setFullName(rs.getString("full_name"))
+                        .setId(rs.getInt("id"))
+                        .setFullName(rs.getString("fullName"))
                         .setEmail(rs.getString("email"))
-                        .setDriverLicenseId(rs.getString("license_id"))
+                        .setDriverLicenseId(rs.getString("driverLicenseId"))
                         .setBirthdate(rs.getDate("birthdate").toLocalDate())
                         .build();
                 customers.add(customer);
@@ -47,9 +47,9 @@ public class CustomerRepository implements ICustomerRepository {
                 if (rs.next()) {
                     return new Customer.Builder()
                             .setId(rs.getInt("id"))
-                            .setFullName(rs.getString("full_name"))
+                            .setFullName(rs.getString("fullName"))
                             .setEmail(rs.getString("email"))
-                            .setDriverLicenseId(rs.getString("license_id"))
+                            .setDriverLicenseId(rs.getString("driverLicenseId"))
                             .setBirthdate(rs.getDate("birthdate").toLocalDate())
                             .build();
                 }
@@ -73,9 +73,5 @@ public class CustomerRepository implements ICustomerRepository {
                 if (rs.next()) c.setId(rs.getInt(1));
             }
         }
-    }
-    @Override
-    public Customer findByEmail(String email) throws SQLException {
-        return null;
     }
 }

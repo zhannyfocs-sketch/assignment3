@@ -16,4 +16,5 @@ public class FleetConfig {
     }
 
     public int getMinDriverAge() { return minDriverAge; }
+    public double getTaxRate() {return taxRate;}
 }

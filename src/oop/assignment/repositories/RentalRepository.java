@@ -86,9 +86,18 @@ public class RentalRepository implements IRentalRepository {
 
     @Override
     public boolean hasOverlappingRental(int carId, java.time.LocalDate start, java.time.LocalDate end) throws SQLException {
-        return findAll().stream()
-                .filter(r -> r.getCarId() == carId)
-                .anyMatch(r -> start.isBefore(r.getEndDate()) && end.isAfter(r.getStartDate()));
+        String sql = "SELECT COUNT(*) FROM rentals WHERE car_id = ? AND status = 'active' " +
+                "AND (start_date < ? AND end_date > ?)";
+        try (Connection conn = db.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, carId);
+            stmt.setDate(2, Date.valueOf(end));
+            stmt.setDate(3, Date.valueOf(start));
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) return rs.getInt(1) > 0;
+            }
+        }
+        return false;
     }
 
     @Override

@@ -6,7 +6,9 @@ import oop.assignment.factories.CarFactory;
 import oop.assignment.repositories.interfaces.ICarRepository;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class CarRepository implements ICarRepository {
     private final IDB db;
@@ -78,6 +80,7 @@ public class CarRepository implements ICarRepository {
         }
         return cars;
     }
+
     @Override
     public void updateAvailability(int id, boolean available) throws SQLException {
         String sql = "UPDATE cars SET is_available = ? WHERE id = ?";
@@ -88,10 +91,12 @@ public class CarRepository implements ICarRepository {
             stmt.executeUpdate();
         }
     }
+
     @Override
     public List<Car> findAvailable() throws SQLException {
         return findAll().stream()
                 .filter(Car::isAvailable)
-                .toList();
+                .sorted(Comparator.comparingInt(Car::getId))
+                .collect(Collectors.toList());
     }
 }

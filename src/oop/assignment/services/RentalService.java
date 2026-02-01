@@ -28,6 +28,12 @@ public class RentalService {
     public void createRental(Rental rental) throws SQLException, CarNotAvailableException,
             RentalOverlapException, InvalidDriverAgeException {
         Customer customer = customerRepo.findById(rental.getCustomerId());
+        if (rental.getStartDate().isBefore(java.time.LocalDate.now())) {
+            throw new IllegalArgumentException("Start date cannot be in the past.");
+        }
+        if (rental.getRentalDays() <= 0) {
+            throw new IllegalArgumentException("End date must be after start date. Total days must be at least 1.");
+        }
         if (customer.getAge() < FleetConfig.getInstance().getMinDriverAge()) {
             throw new InvalidDriverAgeException(customer.getAge());
         }
