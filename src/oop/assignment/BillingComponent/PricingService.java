@@ -2,7 +2,7 @@ package oop.assignment.BillingComponent;
 
 import oop.assignment.FleetComponent.Car;
 import oop.assignment.RentalComponent.Rental;
-import oop.assignment.RentalComponent.exceptions.InvalidPaymentAmount;
+import oop.assignment.BillingComponent.exceptions.InvalidPaymentAmount;
 
 import java.math.BigDecimal;
 

@@ -1,7 +1,6 @@
 package oop.assignment.RentalComponent;
 
 import oop.assignment.BillingComponent.IPaymentRepository;
-import oop.assignment.BillingComponent.Payment;
 import oop.assignment.FleetComponent.Car;
 import oop.assignment.FleetComponent.ICarRepository;
 import oop.assignment.RentalComponent.exceptions.*;
