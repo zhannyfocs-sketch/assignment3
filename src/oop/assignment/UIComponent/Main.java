@@ -103,38 +103,33 @@ public class Main {
 
                     case 3:
                         System.out.print("Rental ID to complete: ");
-                        int rentalId = Integer.parseInt(scanner.nextLine());
-
-                        Rental rental = rentalRepo.findById(rentalId);
-                        Car car = carRepo.findById(rental.getCarId());
+                        int rid = Integer.parseInt(scanner.nextLine());
 
                         System.out.print("Was there an accident? (yes/no): ");
-                        boolean hadAccident = scanner.nextLine().equalsIgnoreCase("yes");
+                        boolean accident = scanner.nextLine().equalsIgnoreCase("yes");
 
-                        BigDecimal totalAmount = pricingService.calculateTotal(car, rental, hadAccident);
+                        Rental rent = rentalRepo.findById(rid);
+                        Car rentedCar = carRepo.findById(rent.getCarId());
+                        BigDecimal finalAmount = pricingService.calculateTotal(rentedCar, rent, accident);
 
-                        System.out.println("\n==================================");
-                        System.out.println("       RENTAL FINAL RECEIPT       ");
-                        System.out.println("==================================");
-                        System.out.printf("Base Rate :  ", rental.getRentalDays(), car.getRate().multiply(BigDecimal.valueOf(rental.getRentalDays())));
-                        System.out.printf("Insurance Fee: ", InsurancePolicy.getInstance().getBaseInsuranceFee());
-                        System.out.printf("Tax : ", TaxConfig.getInstance().getTaxRate() * 100, totalAmount.subtract(totalAmount.divide(BigDecimal.valueOf(1 + TaxConfig.getInstance().getTaxRate()), 2, java.math.RoundingMode.HALF_UP)));
+                        System.out.println("\nTotal Amount Due: " + finalAmount);
 
-                        if (hadAccident) {
-                            System.out.printf("ACCIDENT SURCHARGE:   ", InsurancePolicy.getInstance().getStandardAccidentFee());
-                        }
+                        System.out.println("Select Payment Method:");
+                        System.out.println("1. Credit Card");
+                        System.out.println("2. Cash / Bank Transfer");
+                        System.out.print("Option: ");
+                        int method = Integer.parseInt(scanner.nextLine());
 
-                        System.out.println("----------------------------------");
-                        System.out.printf("TOTAL AMOUNT DUE: ", totalAmount);
-                        System.out.println("==================================\n");
-
-                        System.out.print("Process payment and close rental? (yes/no): ");
-                        if (scanner.nextLine().equalsIgnoreCase("yes")) {
-                            rentalService.completeRental(rentalId, hadAccident);
-                            System.out.println("Success: Rental finalized and payment recorded.");
+                        if (method == 1) {
+                            System.out.print("Enter Card Number: "); String card = scanner.nextLine();
+                            System.out.print("Enter Expiry (MM/YY): "); String expiry = scanner.nextLine();
+                            System.out.println("Processing Card [" + card + "]...");
                         } else {
-                            System.out.println("Payment deferred. Rental remains open.");
+                            System.out.println("Waiting for Cash/Transfer confirmation...");
                         }
+
+                        rentalService.completeRental(rid,accident);
+                        System.out.println("\n[✔] Payment Successful! Rental closed.");
                         break;
 
                     case 4:
