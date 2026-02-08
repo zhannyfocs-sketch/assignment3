@@ -59,7 +59,7 @@ public class CustomerRepository implements ICustomerRepository {
 
     @Override
     public void add(Customer c) throws SQLException {
-        String sql = "INSERT INTO customers (fullName, email, license_id, birthdate) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO customers (fullName, email, driverLicenseId, birthdate) VALUES (?, ?, ?, ?)";
         try (Connection conn = db.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, c.getFullName());
