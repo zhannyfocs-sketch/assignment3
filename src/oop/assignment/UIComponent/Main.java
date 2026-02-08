@@ -1,8 +1,6 @@
 package oop.assignment.UIComponent;
 
-import oop.assignment.BillingComponent.IPaymentRepository;
-import oop.assignment.BillingComponent.PaymentRepository;
-import oop.assignment.BillingComponent.PricingService;
+import oop.assignment.BillingComponent.*;
 import oop.assignment.FleetComponent.Car;
 import oop.assignment.FleetComponent.CarInventoryService;
 import oop.assignment.FleetComponent.CarRepository;
@@ -15,6 +13,7 @@ import oop.assignment.db.PostgresDB;
 import oop.assignment.RentalComponent.Customer;
 import oop.assignment.RentalComponent.Rental;
 
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
@@ -99,24 +98,50 @@ public class Main {
                                 .build();
 
                         rentalService.createRental(r);
-                        System.out.println("Success: Rental created. Car marked as RENTED.");
+                        System.out.println("Success: Rental number " + r.getId() + " created. Car marked as RENTED.");
                         break;
 
                     case 3:
-                        System.out.print("Rental ID to complete: "); int rId = scanner.nextInt();
-                        scanner.nextLine();
-                        System.out.print("Was there an accident? (yes/no): ");
-                        boolean accident = scanner.nextLine().equalsIgnoreCase("yes");
+                        System.out.print("Rental ID to complete: ");
+                        int rentalId = Integer.parseInt(scanner.nextLine());
 
-                        rentalService.completeRental(rId, accident);
-                        System.out.println("Success: Rental finalized and payment recorded.");
+                        Rental rental = rentalRepo.findById(rentalId);
+                        Car car = carRepo.findById(rental.getCarId());
+
+                        System.out.print("Was there an accident? (yes/no): ");
+                        boolean hadAccident = scanner.nextLine().equalsIgnoreCase("yes");
+
+                        BigDecimal totalAmount = pricingService.calculateTotal(car, rental, hadAccident);
+
+                        System.out.println("\n==================================");
+                        System.out.println("       RENTAL FINAL RECEIPT       ");
+                        System.out.println("==================================");
+                        System.out.printf("Base Rate :  ", rental.getRentalDays(), car.getRate().multiply(BigDecimal.valueOf(rental.getRentalDays())));
+                        System.out.printf("Insurance Fee: ", InsurancePolicy.getInstance().getBaseInsuranceFee());
+                        System.out.printf("Tax : ", TaxConfig.getInstance().getTaxRate() * 100, totalAmount.subtract(totalAmount.divide(BigDecimal.valueOf(1 + TaxConfig.getInstance().getTaxRate()), 2, java.math.RoundingMode.HALF_UP)));
+
+                        if (hadAccident) {
+                            System.out.printf("ACCIDENT SURCHARGE:   ", InsurancePolicy.getInstance().getStandardAccidentFee());
+                        }
+
+                        System.out.println("----------------------------------");
+                        System.out.printf("TOTAL AMOUNT DUE: ", totalAmount);
+                        System.out.println("==================================\n");
+
+                        System.out.print("Process payment and close rental? (yes/no): ");
+                        if (scanner.nextLine().equalsIgnoreCase("yes")) {
+                            rentalService.completeRental(rentalId, hadAccident);
+                            System.out.println("Success: Rental finalized and payment recorded.");
+                        } else {
+                            System.out.println("Payment deferred. Rental remains open.");
+                        }
                         break;
 
                     case 4:
                         List<Car> cars = carInventoryService.getOnlyAvailableCars();
                         System.out.println("\n--- Current Available Inventory ---");
                         if (cars.isEmpty()) System.out.println("No cars currently available.");
-                        cars.forEach(car -> System.out.println("ID: " + car.getId() + " | " + car.getModel() + " [" + car.getType() + "]"));
+                        cars.forEach(car1 -> System.out.println("ID: " + car1.getId() + " | " + car1.getModel() + " [" + car1.getType() + "]"));
                         break;
 
                     case 5:
