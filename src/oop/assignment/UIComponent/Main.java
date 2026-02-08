@@ -80,7 +80,7 @@ public class Main {
                                 .setBirthdate(birthdate)
                                 .build();
                         customerRepo.add(c);
-                        System.out.println("Success: Customer registered.");
+                        System.out.println("Success: Customer " + c.getId() + " registered.");
                         break;
 
                     case 2:
