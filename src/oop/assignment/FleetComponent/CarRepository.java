@@ -81,7 +81,7 @@ public class CarRepository implements ICarRepository {
 
     @Override
     public void updateAvailability(int id, boolean available) throws SQLException {
-        String sql = "UPDATE cars SET is_available = ? WHERE id = ?";
+        String sql = "UPDATE cars SET available = ? WHERE id = ?";
         try (Connection conn = db.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setBoolean(1, available);
